@@ -1,0 +1,58 @@
+import scala.io.Source
+
+object AdvancedDataAnalysis {
+  def main(args: Array[String]): Unit = {
+    println("Advanced Data Analysis Example")
+
+    // Reading data from a CSV file
+    val data: List[Double] = readDataFromCSV("data.csv")
+
+    // Data processing and analysis steps
+    val filteredData: List[Double] = filterOutliers(data)
+    val mean: Double = calculateMean(filteredData)
+    val variance: Double = calculateVariance(filteredData, mean)
+    val standardDeviation: Double = calculateStandardDeviation(variance)
+
+    // Reporting the results
+    println(s"Filtered Data: $filteredData")
+    println(s"Mean: $mean")
+    println(s"Variance: $variance")
+    println(s"Standard Deviation: $standardDeviation")
+  }
+
+  // Reading data from a CSV file
+  def readDataFromCSV(filename: String): List[Double] = {
+    val bufferedSource = Source.fromFile(filename)
+    val data: List[Double] = bufferedSource.getLines().toList.map(_.toDouble)
+    bufferedSource.close()
+    data
+  }
+
+  // Filtering out outliers
+  def filterOutliers(data: List[Double]): List[Double] = {
+    val mean: Double = calculateMean(data)
+    val stdDev: Double = calculateStandardDeviation(calculateVariance(data, mean))
+    val lowerBound: Double = mean - 2 * stdDev
+    val upperBound: Double = mean + 2 * stdDev
+    data.filter(value => value >= lowerBound && value <= upperBound)
+  }
+
+  // Calculating the mean
+  def calculateMean(data: List[Double]): Double = {
+    val sum: Double = data.sum
+    val count: Double = data.length.toDouble
+    sum / count
+  }
+
+  // Calculating the variance
+  def calculateVariance(data: List[Double], mean: Double): Double = {
+    val squaredDifferences: List[Double] = data.map(value => Math.pow(value - mean, 2))
+    val sumOfSquaredDifferences: Double = squaredDifferences.sum
+    sumOfSquaredDifferences / data.length.toDouble
+  }
+
+  // Calculating the standard deviation
+  def calculateStandardDeviation(variance: Double): Double = {
+    Math.sqrt(variance)
+  }
+}
